@@ -8,7 +8,7 @@ from torch.nn.utils.rnn import pack_padded_sequence
 from data_loader import *
 from models import EncoderCNN, DecoderRNN
 
-device = torch.device('cuda')
+device = torch.device('cuda:0')
 
 
 def do(args: argparse.Namespace):
@@ -29,8 +29,11 @@ def do(args: argparse.Namespace):
     # models
     encoder = EncoderCNN(args.embed_size).to(device)
     decoder = DecoderRNN(len(vocab), args.embed_size, args.hidden_size, args.num_layers).to(device)
+    encoder = nn.DataParallel(encoder, device_ids=[0], dim=0)
+    decoder = nn.DataParallel(decoder, device_ids=[0], dim=0)
+    print('parallel success')
     loss_cls = nn.CrossEntropyLoss().to(device)
-    params = list(encoder.fc.parameters()) + list(encoder.bn1d.parameters()) + list(decoder.parameters())
+    params = list(encoder.module.fc.parameters()) + list(encoder.module.bn1d.parameters()) + list(decoder.parameters())
     optimizer = torch.optim.Adam(params, lr=args.learning_rate)
     # resume
     if args.resume:
@@ -42,9 +45,9 @@ def do(args: argparse.Namespace):
     # train
     total_step = len(coco_loader)
     print('total step in each epoch : ', total_step)
-    encoder.fc.train(mode=True)
-    encoder.bn1d.train(mode=True)
-    encoder.encoder.eval()
+    encoder.module.fc.train(mode=True)
+    encoder.module.bn1d.train(mode=True)
+    encoder.module.encoder.eval()
     decoder.train(mode=True)
     input('ready')
     for cur_epoch in range(args.num_epochs):
@@ -58,7 +61,7 @@ def do(args: argparse.Namespace):
             decoder.zero_grad()
             loss.backward()
             optimizer.step()
-            # input('pause test')
+            input('pause test')
             if (cur_step + 1) % args.print_step == 0:
                 print('Epoch : %d/%d\tStep : %d/%d\tLoss : %.8f\tPerplexity : %.8f' % (
                     cur_epoch + 1, args.num_epochs, cur_step + 1, total_step, loss.item(), np.exp(loss.item())))
