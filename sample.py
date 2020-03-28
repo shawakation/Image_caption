@@ -7,7 +7,7 @@ from PIL import Image
 
 from models import EncoderCNN, DecoderRNN
 
-device = torch.device('cuda')
+device = torch.device('cuda:0')
 
 
 def load_image(img_path: str, transform: transforms = None) -> torch.Tensor:
@@ -30,7 +30,7 @@ def do(args: argparse.Namespace):
     # model
     encoder = EncoderCNN(args.embed_size).to(device)
     decoder = DecoderRNN(len(vocab), args.embed_size, args.hidden_size, args.num_layers).to(device)
-    model_state = torch.load(args.checkpoint_path)
+    model_state = torch.load(args.checkpoint_path, map_location={'cuda:2': 'cuda:0'})
     encoder.load_state_dict(model_state['encoder'])
     decoder.load_state_dict(model_state['decoder'])
     print('load successfully at\tepoch:%d\tstep:%d' % (model_state['epoch'], model_state['step']))
@@ -59,6 +59,6 @@ if __name__ == '__main__':
     parser.add_argument('--vocab_path', type=str, default='.\\data\\vocab.pickle', help='path for vocabulary wrapper')
     parser.add_argument('--embed_size', type=int, default=256, help='dimension of word embedding vectors')
     parser.add_argument('--hidden_size', type=int, default=512, help='dimension of lstm hidden states')
-    parser.add_argument('--num_layers', type=int, default=1, help='number of layers in lstm')
+    parser.add_argument('--num_layers', type=int, default=2, help='number of layers in lstm')
     args = parser.parse_args()
     do(args)

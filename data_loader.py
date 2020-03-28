@@ -49,7 +49,7 @@ def get_data(data: list) -> tuple:
 
 def get_dataloader(root: str, json_path: str, vocab: Vocabulary, batch_size: int, num_workers: int, transform: transforms = None, shuffle: bool = False):
     coco_set = CocoDataset(root, json_path, vocab, transform)
-    coco_loader = data.DataLoader(dataset=coco_set, batch_size=batch_size, shuffle=shuffle, collate_fn=get_data, num_workers=num_workers)
+    coco_loader = data.DataLoader(dataset=coco_set, batch_size=batch_size, shuffle=shuffle, collate_fn=get_data, num_workers=num_workers, pin_memory=True)
     return coco_loader
 
 
