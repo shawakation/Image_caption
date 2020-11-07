@@ -3,19 +3,15 @@ import pickle
 
 import numpy as np
 import torch.nn as nn
-# import torch.utils.tensorboard as tensorboard
 from torch.nn.utils.rnn import pack_padded_sequence
 
 from data_loader import *
 from models import EncoderCNN, DecoderRNN
 
-device = torch.device('cuda:2')
-
 
 def do(args: argparse.Namespace):
     if not os.path.exists(args.save_model_path):
         os.mkdir(args.save_model_path)
-    # writer = tensorboard.SummaryWriter('.\\records')
     # preprocess
     preprocess = transforms.Compose([
         transforms.RandomCrop(args.random_crop_size),
@@ -29,9 +25,9 @@ def do(args: argparse.Namespace):
     coco_loader = get_dataloader(root=args.dataset_path, json_path=args.json_path, vocab=vocab, batch_size=args.batch_size, num_workers=args.num_workers,
                                  transform=preprocess, shuffle=False)
     # models
-    encoder = EncoderCNN(args.embed_size).to(device)
-    decoder = DecoderRNN(len(vocab), args.embed_size, args.hidden_size, args.num_layers).to(device)
-    loss_cls = nn.CrossEntropyLoss().to(device)
+    encoder = EncoderCNN(args.embed_size).cuda()
+    decoder = DecoderRNN(len(vocab), args.embed_size, args.hidden_size, args.num_layers).cuda()
+    loss_cls = nn.CrossEntropyLoss().cuda()
     params = list(encoder.fc.parameters()) + list(encoder.bn1d.parameters()) + list(decoder.parameters())
     optimizer = torch.optim.Adam(params, lr=args.learning_rate)
     # resume
@@ -51,8 +47,8 @@ def do(args: argparse.Namespace):
     input('ready')
     for cur_epoch in range(args.num_epochs):
         for cur_step, (image, caption, length) in enumerate(coco_loader):
-            image = image.to(device)
-            caption = caption.to(device)
+            image = image.cuda()
+            caption = caption.cuda()
             target = pack_padded_sequence(caption, length, batch_first=True)[0]
             out = decoder(encoder(image), caption, length)
             loss = loss_cls(out, target)
@@ -60,7 +56,6 @@ def do(args: argparse.Namespace):
             decoder.zero_grad()
             loss.backward()
             optimizer.step()
-            # input('pause test')
             if (cur_step + 1) % args.print_step == 0:
                 print('Epoch : %d/%d\tStep : %d/%d\tLoss : %.8f\tPerplexity : %.8f' % (
                     cur_epoch + 1, args.num_epochs, cur_step + 1, total_step, loss.item(), np.exp(loss.item())))
