@@ -10,6 +10,8 @@ from models import EncoderCNN, DecoderRNN
 
 
 def do(args: argparse.Namespace):
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+    print('gpu:', args.gpu)
     if not os.path.exists(args.save_model_path):
         os.mkdir(args.save_model_path)
     # preprocess
@@ -84,5 +86,6 @@ if __name__ == '__main__':
     parser.add_argument('--num_workers', type=int, default=4, help='number of workers of dataloader')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='learning rate')
     parser.add_argument('--resume', type=bool, default=False, help='resume model?')
+    parser.add_argument('--gpu', type=str, default='0', help='which gpu to use')
     args = parser.parse_args()
     do(args)
