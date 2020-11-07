@@ -39,8 +39,8 @@ def do(args: argparse.Namespace):
 
 if __name__ == '__main__':
     opt = argparse.ArgumentParser(description='script to build a vocab using the captions from coco dataset')
-    opt.add_argument('--caption_path', type=str, default='.\\data\\annotations\\captions_train2014.json', help='coco caption json file path')
-    opt.add_argument('--vocab_path', type=str, default='.\\data\\vocab.pickle', help='path of the vocab file to save')
+    opt.add_argument('--caption_path', type=str, default='data/annotations/captions_train2014.json', help='coco caption json file path')
+    opt.add_argument('--vocab_path', type=str, default='data/vocab.pickle', help='path of the vocab file to save')
     opt.add_argument('--threshold', type=int, default=2, help='minimum word count threshold')
     args = opt.parse_args()
     print(args)

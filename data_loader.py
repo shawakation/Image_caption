@@ -26,8 +26,7 @@ class CocoDataset(data.Dataset):
         if self.transform is not None:
             img = self.transform(img)
         words = word_tokenize(str(caption).lower())
-        tokens = []
-        tokens.append(self.vocab('<start>'))
+        tokens = [self.vocab('<start>')]
         tokens.extend([self.vocab(word) for word in words])
         tokens.append(self.vocab('<end>'))
         return img, torch.Tensor(tokens)

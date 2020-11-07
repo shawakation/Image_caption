@@ -32,7 +32,7 @@ def do(args: argparse.Namespace):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='tool to resize each image in coco')
-    parser.add_argument('--input_path', type=str, default='.\\data\\train2014', help='input path of coco. default : .\\data\\train2014')
-    parser.add_argument('--output_path', type=str, default='.\\data\\train2014_resize', help='output path of coco. default : .\\data\\train2014_resize')
+    parser.add_argument('--input_path', type=str, default='data/train2014', help='input path of coco. default : data/train2014')
+    parser.add_argument('--output_path', type=str, default='data/train2014_resize', help='output path of coco. default : data/train2014_resize')
     parser.add_argument('--img_size', type=int, default=256, help='size of images to resize. default : 256 x 256')
     do(parser.parse_args())

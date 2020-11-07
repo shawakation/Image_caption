@@ -79,9 +79,9 @@ if __name__ == '__main__':
     # model params
     parser.add_argument('--embed_size', type=int, default=256, help='dimension of word embedding vectors')
     parser.add_argument('--hidden_size', type=int, default=512, help='dimension of lstm hidden states')
-    parser.add_argument('--num_layers', type=int, default=2, help='number of layers in lstm')
-    parser.add_argument('--num_epochs', type=int, default=20, help='number of epochs')
-    parser.add_argument('--num_workers', type=int, default=3, help='number of workers of dataloader')
+    parser.add_argument('--num_layers', type=int, default=3, help='number of layers in lstm')
+    parser.add_argument('--num_epochs', type=int, default=500, help='number of epochs')
+    parser.add_argument('--num_workers', type=int, default=4, help='number of workers of dataloader')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='learning rate')
     parser.add_argument('--resume', type=bool, default=False, help='resume model?')
     args = parser.parse_args()

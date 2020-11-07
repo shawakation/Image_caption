@@ -19,7 +19,7 @@ class EncoderCNN(nn.Module):
 
 
 class DecoderRNN(nn.Module):
-    def __init__(self, vocab_size: int, embed_size: int, hidden_size: int, layer_num: int, max_sample_length=30):
+    def __init__(self, vocab_size: int, embed_size: int, hidden_size: int, layer_num: int, max_sample_length=31):
         super(DecoderRNN, self).__init__()
         self.embed = nn.Embedding(num_embeddings=vocab_size, embedding_dim=embed_size)
         self.lstm = nn.LSTM(input_size=embed_size, hidden_size=hidden_size, num_layers=layer_num, bias=True, batch_first=True)
